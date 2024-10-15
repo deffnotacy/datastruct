@@ -1,0 +1,229 @@
+package list;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.util.ArrayList;
+
+// Task Panel class representing individual tasks
+class Task extends JPanel {
+    JLabel index;
+    JTextField taskName;
+    JButton done, delete;
+    boolean checked = false;
+    Color taskBgColor = new Color(255, 161, 161);  // Original task background color
+    Color completedColor = new Color(200, 200, 200);  // Shaded color for completion
+    Dimension buttonSize = new Dimension(80, 30);  // Button size
+
+    Task() {
+        this.setLayout(new BorderLayout());
+        this.setBackground(taskBgColor);
+        this.setOpaque(false); // Make the task panel transparent
+
+        // Task index label
+        index = new JLabel("");
+        index.setFont(new Font("Serif", Font.PLAIN, 14));
+        this.add(index, BorderLayout.WEST);
+
+        // Task name text field
+        taskName = new JTextField("Write something..");
+        taskName.setBackground(taskBgColor);
+        taskName.setOpaque(false); // Transparent background for text field
+        taskName.setFont(new Font("Serif", Font.PLAIN, 14));
+        this.add(taskName, BorderLayout.CENTER);
+
+        // Panel for Done and Delete buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setOpaque(false);
+
+        // Done button (Black color)
+        done = new JButton("✔");
+        done.setFont(new Font("SansSerif", Font.BOLD, 12));
+        done.setBackground(Color.BLACK); // Set background to black
+        done.setForeground(Color.WHITE); // Set text to white
+        done.setPreferredSize(buttonSize);
+        buttonPanel.add(done);
+
+        // Delete button (Black color)
+        delete = new JButton("✘");
+        delete.setFont(new Font("SansSerif", Font.BOLD, 12));
+        delete.setBackground(Color.BLACK); // Set background to black
+        delete.setForeground(Color.WHITE); // Set text to white
+        delete.setPreferredSize(buttonSize);
+        buttonPanel.add(delete);
+
+        // Add the button panel to the Task panel
+        this.add(buttonPanel, BorderLayout.EAST);
+    }
+
+    // Method to set the task index number
+    public void changeIndex(int num) {
+        index.setText(num + "  ");
+    }
+
+    // Method to change appearance when task is marked as completed
+    public void changeState() {
+        this.setBackground(completedColor); // Change background to shaded color
+        taskName.setBackground(completedColor);
+        taskName.setOpaque(true); // Ensure the text field background changes
+
+        // Change the font style and color to indicate completion
+        taskName.setFont(new Font("Serif", Font.ITALIC, 14));
+        taskName.setForeground(Color.GRAY); // Set text color to gray
+
+        checked = true;
+        done.setEnabled(false); // Disable Done button after completion
+        delete.setEnabled(false); // Disable Delete button after completion
+    }
+}
+
+// BackgroundPanel class to display background image
+class BackgroundPanel extends JPanel {
+    private Image backgroundImage;
+
+    public BackgroundPanel(String imagePath) {
+        ImageIcon bgIcon = new ImageIcon(imagePath);
+        this.backgroundImage = bgIcon.getImage();
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+    }
+}
+
+// Main Task List to hold all tasks
+class TaskList {
+    private ArrayList<Task> tasks;
+
+    TaskList() {
+        tasks = new ArrayList<>();
+    }
+
+    public void addTask(Task task) {
+        tasks.add(task);
+    }
+
+    public void removeTask(Task task) {
+        tasks.remove(task);
+    }
+
+    public ArrayList<Task> getTasks() {
+        return tasks;
+    }
+
+    public int getSize() {
+        return tasks.size();
+    }
+}
+
+// Display panel for tasks
+class ListPanel extends JPanel {
+    TaskList taskList;
+
+    ListPanel(TaskList taskList) {
+        this.taskList = taskList;
+        setLayout(new GridLayout(10, 1, 0, 5));
+        setOpaque(false); // Make transparent
+    }
+
+    public void updateDisplay() {
+        removeAll();
+        for (int i = 0; i < taskList.getSize(); i++) {
+            Task task = taskList.getTasks().get(i);
+            task.changeIndex(i + 1);
+            add(task);
+        }
+        revalidate();
+        repaint();
+    }
+
+    public void removeCompletedTasks() {
+        ArrayList<Task> completedTasks = new ArrayList<>();
+        for (Task task : taskList.getTasks()) {
+            if (task.checked) {
+                completedTasks.add(task);
+            }
+        }
+        for (Task task : completedTasks) {
+            taskList.removeTask(task);
+        }
+        updateDisplay();
+    }
+}
+
+// Footer panel for Add and Clear buttons
+class Footer extends JPanel {
+    JButton addTask = new JButton("Add Task"), clear = new JButton("Clear finished tasks");
+
+    Footer() {
+        setLayout(new FlowLayout());
+        setOpaque(false); // Make transparent
+
+        // Set background color of both buttons to black
+        addTask.setBackground(Color.BLACK);
+        addTask.setForeground(Color.WHITE); // Set text color to white
+        clear.setBackground(Color.BLACK);
+        clear.setForeground(Color.WHITE); // Set text color to white
+        
+        add(addTask);
+        add(clear);
+    }
+}
+
+// Main application frame
+class AppFrame extends JFrame {
+    TaskList taskList = new TaskList();
+    ListPanel listPanel = new ListPanel(taskList);
+    Footer footer = new Footer();
+
+    AppFrame() {
+        // Load background image from the specified path
+        String imagePath = "C:\\Users\\Maymay\\Downloads\\Download premium image of Paper texture mobile wallpaper, simple background by mook about instagram story plain background, plain cream background, iphone wallpaper plain, minimalist iphone wallpaper, and beige mi.jpg";
+        BackgroundPanel backgroundPanel = new BackgroundPanel(imagePath);
+
+        setTitle("To-Do List");
+        setSize(400, 600);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setContentPane(backgroundPanel); // Set the background
+
+        backgroundPanel.setLayout(new BorderLayout());
+
+        // Title label with custom font
+        JLabel titleLabel = new JLabel("To Do List", JLabel.CENTER);
+        titleLabel.setFont(new Font("Serif", Font.BOLD, 24));
+        backgroundPanel.add(titleLabel, BorderLayout.NORTH);
+
+        // Main task list and footer
+        backgroundPanel.add(listPanel, BorderLayout.CENTER);
+        backgroundPanel.add(footer, BorderLayout.SOUTH);
+
+        // Add Task button listener
+        footer.addTask.addActionListener(e -> {
+            Task task = new Task();
+            taskList.addTask(task);
+            listPanel.updateDisplay();
+
+            // Done button listener
+            task.done.addActionListener(evt -> task.changeState());
+
+            // Delete button listener
+            task.delete.addActionListener(evt -> {
+                taskList.removeTask(task);
+                listPanel.updateDisplay();
+            });
+        });
+
+        // Clear finished tasks button listener
+        footer.clear.addActionListener(e -> listPanel.removeCompletedTasks());
+
+        setVisible(true);
+    }
+}
+
+// Main class to launch the To-Do List application
+public class ToDoListApp {
+    public static void main(String[] args) {
+        new AppFrame();
+    }
+}
