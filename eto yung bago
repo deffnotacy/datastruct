@@ -1,0 +1,278 @@
+package newlist;
+
+import java.awt.*;
+import javax.swing.*;
+import java.util.ArrayList;
+import javax.swing.border.EmptyBorder;
+
+// Main application frame
+public class TaskManagerApp extends JFrame {
+    private TaskList urgentTaskList = new TaskList(); // List for urgent tasks
+    private TaskList notUrgentTaskList = new TaskList(); // List for not urgent tasks
+
+    // Constructor for TaskManagerApp
+    public TaskManagerApp() {
+        setTitle("To-Do List");
+        setSize(800, 600);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        JPanel taskPanel = new JPanel(new GridLayout(1, 2, 20, 20)); // Gaps between panels
+
+        // Styling for Important and Urgent
+        ImagePanel urgentPanel = new ImagePanel("C:\\Users\\Maymay\\Downloads\\download (3).jpg"); // Use your image path
+        urgentPanel.setLayout(new BorderLayout());
+        JLabel urgentLabel = new JLabel("Important and Urgent", JLabel.CENTER);
+        urgentLabel.setFont(new Font("Serif", Font.BOLD, 16));
+        urgentLabel.setForeground(Color.BLACK); // Set text color to white
+
+        ListPanel urgentListPanel = new ListPanel(urgentTaskList); // Create a ListPanel for urgent tasks
+        urgentPanel.add(urgentLabel, BorderLayout.NORTH);
+        urgentPanel.add(urgentListPanel, BorderLayout.CENTER); // Add the ListPanel to the urgent panel
+        urgentPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // Black border
+        urgentPanel.setBorder(new EmptyBorder(20, 20, 20, 20)); // Add space around the urgent panel
+
+        // Styling for Important but Not Urgent
+        ImagePanel notUrgentPanel = new ImagePanel("C:\\Users\\Maymay\\Downloads\\download (2).jpg"); // Use your image path
+        notUrgentPanel.setLayout(new BorderLayout());
+        JLabel notUrgentLabel = new JLabel("Important but Not Urgent", JLabel.CENTER);
+        notUrgentLabel.setFont(new Font("Serif", Font.BOLD, 16));
+        notUrgentLabel.setForeground(Color.WHITE); // Set text color to white
+
+        ListPanel notUrgentListPanel = new ListPanel(notUrgentTaskList); // Create a ListPanel for not urgent tasks
+        notUrgentPanel.add(notUrgentLabel, BorderLayout.NORTH);
+        notUrgentPanel.add(notUrgentListPanel, BorderLayout.CENTER); // Add the ListPanel to the not urgent panel
+        notUrgentPanel.setBorder(BorderFactory.createLineBorder(Color.MAGENTA, 2)); // Purple border
+        notUrgentPanel.setBorder(new EmptyBorder(20, 20, 20, 20)); // Add space around the not urgent panel
+
+        taskPanel.add(urgentPanel);
+        taskPanel.add(notUrgentPanel);
+
+        add(taskPanel, BorderLayout.CENTER);
+        Footer footer = new Footer(urgentListPanel, notUrgentListPanel); // Pass the list panels to the footer
+        add(footer, BorderLayout.SOUTH);
+
+        setVisible(true);
+    }
+
+    // Custom panel to draw the background image
+    static class ImagePanel extends JPanel {
+        private Image backgroundImage;
+
+        public ImagePanel(String imagePath) {
+            this.backgroundImage = new ImageIcon(imagePath).getImage(); // Load the image
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this); // Draw the image
+        }
+    }
+
+    
+static class Task extends JPanel {
+    JLabel index;
+    JTextField taskName;
+    JButton done, delete;
+    boolean checked = false;
+    Color taskBgColor = new Color(245, 222, 179); // Beige background for tasks
+    Color completedColor = new Color(200, 200, 200); // Shaded color for completion
+    Dimension buttonSize = new Dimension(80, 30); // Button size
+
+    Task(int num) {
+        this.setLayout(new BorderLayout());
+        this.setBackground(taskBgColor); // Set task background to beige
+
+        index = new JLabel(num + "  ");
+        index.setFont(new Font("Serif", Font.PLAIN, 14));
+        this.add(index, BorderLayout.WEST);
+
+        taskName = new JTextField("Write something..");
+        taskName.setFont(new Font("Serif", Font.PLAIN, 14));
+        this.add(taskName, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        done = new JButton("✔");
+        done.setFont(new Font("SansSerif", Font.BOLD, 12));
+        done.setBackground(Color.BLACK); // Set background to black
+        done.setForeground(Color.WHITE); // Set text to white
+        done.setPreferredSize(buttonSize);
+        buttonPanel.add(done);
+
+        delete = new JButton("✘");
+        delete.setFont(new Font("SansSerif", Font.BOLD, 12));
+        delete.setBackground(Color.BLACK); // Set background to black
+        delete.setForeground(Color.WHITE); // Set text to white
+        delete.setPreferredSize(buttonSize);
+        buttonPanel.add(delete);
+
+        this.add(buttonPanel, BorderLayout.EAST);
+    }
+
+    public void changeState() {
+        this.setBackground(completedColor); // Change background to shaded color
+        taskName.setBackground(completedColor);
+        taskName.setFont(new Font("Serif", Font.ITALIC, 14));
+        taskName.setForeground(Color.GRAY); // Set text color to gray
+        checked = true;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+}
+
+    // TaskList class to manage multiple tasks
+    static class TaskList {
+        private ArrayList<Task> tasks;
+
+        TaskList() {
+            tasks = new ArrayList<>();
+        }
+
+        public void addTask(Task task) {
+            tasks.add(task);
+        }
+
+        public void removeTask(Task task) {
+            tasks.remove(task);
+        }
+
+        public ArrayList<Task> getTasks() {
+            return tasks;
+        }
+
+        public int getSize() {
+            return tasks.size();
+        }
+
+        public int getCompletedCount() {
+            int count = 0;
+            for (Task task : tasks) {
+                if (task.isChecked()) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        public void clearAllTasks() {
+            tasks.clear();
+        }
+    }
+
+   // ListPanel class to display the list of tasks
+static class ListPanel extends JPanel {
+    TaskList taskList;
+    JLabel completedCountLabel, uncompletedCountLabel;
+
+    ListPanel(TaskList taskList) {
+        this.taskList = taskList;
+        setLayout(new GridLayout(12, 1, 0, 5)); // Increase grid size to accommodate labels
+        setBackground(new Color(200,200,200)); // Set the background color of the ListPanel to beige
+
+        completedCountLabel = new JLabel("Completed: 0");
+        uncompletedCountLabel = new JLabel("Uncompleted: " + taskList.getSize());
+        add(completedCountLabel);
+        add(uncompletedCountLabel);
+    }
+
+    public void updateDisplay() {
+        removeAll();
+        add(completedCountLabel);
+        add(uncompletedCountLabel);
+        for (int i = 0; i < taskList.getSize(); i++) {
+            Task task = taskList.getTasks().get(i);
+            add(task);
+        }
+        revalidate();
+        repaint();
+        updateCounts();
+    }
+
+    public void removeCompletedTasks() {
+        ArrayList<Task> completedTasks = new ArrayList<>();
+        for (Task task : taskList.getTasks()) {
+            if (task.isChecked()) {
+                completedTasks.add(task);
+            }
+        }
+        for (Task task : completedTasks) {
+            taskList.removeTask(task);
+        }
+        updateDisplay();
+    }
+
+    public void updateCounts() {
+        int completedCount = taskList.getCompletedCount();
+        int uncompletedCount = taskList.getSize() - completedCount;
+        completedCountLabel.setText("Completed: " + completedCount);
+        uncompletedCountLabel.setText("Uncompleted: " + uncompletedCount);
+    }
+
+    public void removeAllTasks() {
+        taskList.clearAllTasks();
+        updateDisplay();
+    }
+}
+
+    // Footer class containing action buttons
+    static class Footer extends JPanel {
+        JButton addTaskUrgent = new JButton("Add Urgent Task"), 
+                addTaskNotUrgent = new JButton("Add Not Urgent Task"), 
+                clear = new JButton("Clear finished tasks"), 
+                clearAll = new JButton("Remove All Tasks");
+        
+        // Store references to the ListPanels
+        private ListPanel urgentListPanel;
+        private ListPanel notUrgentListPanel;
+
+        Footer(ListPanel urgentListPanel, ListPanel notUrgentListPanel) {
+            this.urgentListPanel = urgentListPanel; // Save the reference to the urgent list panel
+            this.notUrgentListPanel = notUrgentListPanel; // Save the reference to the not urgent list panel
+            
+            setLayout(new FlowLayout());
+            setOpaque(false);
+
+            addTaskUrgent.setBackground(Color.BLACK);
+            addTaskUrgent.setForeground(Color.WHITE); // Set text color to white
+            addTaskNotUrgent.setBackground(Color.BLACK);
+            addTaskNotUrgent.setForeground(Color.WHITE);
+            clearAll.setBackground(Color.BLACK);
+            clearAll.setForeground(Color.WHITE);
+            clear.setBackground(Color.BLACK);
+            clear.setForeground(Color.WHITE); // Set text color to white
+
+            // Add action listeners to the buttons
+            addTaskUrgent.addActionListener(e -> {
+                Task newTask = new Task(urgentListPanel.getComponentCount() - 2); // Adjusting index for label and count
+                urgentListPanel.taskList.addTask(newTask);
+                urgentListPanel.updateDisplay();
+            });
+
+            addTaskNotUrgent.addActionListener(e -> {
+                Task newTask = new Task(notUrgentListPanel.getComponentCount() - 2); // Adjusting index for label and count
+                notUrgentListPanel.taskList.addTask(newTask);
+                notUrgentListPanel.updateDisplay();
+            });
+
+            clear.addActionListener(e -> urgentListPanel.removeCompletedTasks());
+            clearAll.addActionListener(e -> {
+                urgentListPanel.removeAllTasks();
+                notUrgentListPanel.removeAllTasks();
+            });
+
+            add(addTaskUrgent);
+            add(addTaskNotUrgent);
+            add(clear);
+            add(clearAll); // Add "Remove All Tasks" button
+        }
+    }
+
+    // Main method to run the application
+    public static void main(String[] args) {
+        new TaskManagerApp();
+    }
+}
