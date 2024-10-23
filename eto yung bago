@@ -266,7 +266,11 @@ public class TaskManagerApp extends JFrame {
                 notUrgentListPanel.updateDisplay();
             });
 
-            clear.addActionListener(e -> urgentListPanel.removeCompletedTasks());
+            clear.addActionListener(e -> {
+                urgentListPanel.removeCompletedTasks();  // Clear completed tasks from urgent list
+                notUrgentListPanel.removeCompletedTasks();  // Clear completed tasks from not urgent list
+            });
+
             clearAll.addActionListener(e -> {
                 urgentListPanel.removeAllTasks();
                 notUrgentListPanel.removeAllTasks();
