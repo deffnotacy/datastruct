@@ -1,15 +1,15 @@
-package newlist;
+package project;
 
 import java.awt.*;
 import javax.swing.*;
 import java.util.ArrayList;
 import javax.swing.border.EmptyBorder;
 
-public class TaskManagerApp extends JFrame {
+public class ToDoListApp extends JFrame {
     private TaskList urgentTaskList = new TaskList(); 
     private TaskList notUrgentTaskList = new TaskList(); 
 
-    public TaskManagerApp() {
+    public ToDoListApp() {
         setTitle("To-Do List");
         setSize(800, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -193,8 +193,8 @@ public class TaskManagerApp extends JFrame {
             removeAll();
             add(completedCountLabel);
             add(uncompletedCountLabel);
-            for (int i = 0; i < taskList.getSize(); i++) {
-                Task task = taskList.getTasks().get(i);
+            for (int i = 1; i <= taskList.getSize(); i++) { // Start from 1
+                Task task = taskList.getTasks().get(i - 1);
                 add(task);
             }
             revalidate();
@@ -255,20 +255,20 @@ public class TaskManagerApp extends JFrame {
 
             // Add action listeners
             addTaskUrgent.addActionListener(e -> {
-                Task newTask = new Task(urgentListPanel.getComponentCount() - 2, urgentListPanel); 
+                Task newTask = new Task(urgentListPanel.taskList.getSize() + 1, urgentListPanel); 
                 urgentListPanel.taskList.addTask(newTask);
                 urgentListPanel.updateDisplay();
             });
 
             addTaskNotUrgent.addActionListener(e -> {
-                Task newTask = new Task(notUrgentListPanel.getComponentCount() - 2, notUrgentListPanel); 
+                Task newTask = new Task(notUrgentListPanel.taskList.getSize() + 1, notUrgentListPanel); 
                 notUrgentListPanel.taskList.addTask(newTask);
                 notUrgentListPanel.updateDisplay();
             });
 
             clear.addActionListener(e -> {
-                urgentListPanel.removeCompletedTasks();  // Clear completed tasks from urgent list
-                notUrgentListPanel.removeCompletedTasks();  // Clear completed tasks from not urgent list
+                urgentListPanel.removeCompletedTasks();  
+                notUrgentListPanel.removeCompletedTasks();  
             });
 
             clearAll.addActionListener(e -> {
@@ -284,6 +284,6 @@ public class TaskManagerApp extends JFrame {
     }
 
     public static void main(String[] args) {
-        new TaskManagerApp();
+        new ToDoListApp();
     }
 }
