@@ -1,24 +1,24 @@
-package newlist;
+package project;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class click extends JFrame {
-    
+public class StartUp extends JFrame {
+
     private JProgressBar progressBar;
     private Timer timer;
     private int progressValue = 0;
-    
-    public click() {
+
+    public StartUp() {
         setTitle("TodoList");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        
+
         // Background image
-        String backgroundImagePath = "C:\\Users\\Maymay\\Downloads\\ppt bg.jpg"; 
+        String backgroundImagePath = "C:\\Users\\Maymay\\Downloads\\ppt bg.jpg";  // Replace with actual path
         JLabel background = new JLabel(new ImageIcon(backgroundImagePath));
         background.setLayout(new BorderLayout());
 
@@ -27,7 +27,7 @@ public class click extends JFrame {
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
 
         // Title and subtitle
-        JLabel titleLabel = new JLabel("TodoList for Everyone");
+        JLabel titleLabel = new JLabel("To-Do List for Everyone");
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 32));
         titleLabel.setForeground(Color.BLACK);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -40,11 +40,11 @@ public class click extends JFrame {
         // Button
         JButton getStartedButton = new JButton("Click Here To Start!");
         getStartedButton.setFont(new Font("SansSerif", Font.BOLD, 16));
-        getStartedButton.setBackground(Color.BLACK);  
+        getStartedButton.setBackground(Color.BLACK);  // Set button color to black
         getStartedButton.setForeground(Color.WHITE);
         getStartedButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Progress bar 
+        // Progress bar (initially hidden)
         progressBar = new JProgressBar(0, 100);
         progressBar.setVisible(false);
         progressBar.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -54,29 +54,38 @@ public class click extends JFrame {
         getStartedButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                progressValue = 0;  
-                progressBar.setValue(progressValue); 
-                progressBar.setVisible(true); 
-                timer.start();  
+                progressValue = 0;  // Reset progress value to 0 when button is clicked
+                progressBar.setValue(progressValue);  // Update progress bar value
+                progressBar.setVisible(true);  // Show progress bar
+                timer.start();  // Start the progress
             }
         });
 
         // Timer to simulate progress
-        timer = new Timer(100, new ActionListener() {
+        timer = new Timer(50, new ActionListener() {  // Set delay to 50ms for smoother progress
             @Override
             public void actionPerformed(ActionEvent e) {
-                progressValue += 5;  
+                progressValue += 2;  // Increment the progress value by 2 for smoother, slower progress
                 if (progressValue > 100) {
-                    progressValue = 100; 
+                    progressValue = 100; // Cap at 100 to avoid exceeding
                 }
-                progressBar.setValue(progressValue); 
+                progressBar.setValue(progressValue); // Update the progress bar
 
                 // Check if progress is complete
                 if (progressValue >= 100) {
                     timer.stop(); // Stop the timer
-                    progressBar.setValue(100); 
-                    new TaskManagerApp();  
-                    dispose(); 
+                    progressBar.setValue(100); // Ensure the bar visually completes
+
+                    // Add a short delay before opening the next window
+                    Timer delay = new Timer(500, new ActionListener() {  // 500ms delay after full loading
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            new ToDoListApp();  // Open the new window (Todolist class)
+                            dispose();  // Close the current window
+                        }
+                    });
+                    delay.setRepeats(false);  // Ensure this only happens once
+                    delay.start();
                 }
             }
         });
@@ -97,7 +106,7 @@ public class click extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            new click().setVisible(true);
+            new StartUp().setVisible(true);
         });
     }
 }
