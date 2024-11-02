@@ -1,0 +1,104 @@
+package newlist;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class click extends JFrame {
+    
+    private JProgressBar progressBar;
+    private Timer timer;
+    private int progressValue = 0;
+    
+    public click() {
+        setTitle("TodoList");
+        setSize(600, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        
+        // Background image
+        String backgroundImagePath = "C:\\Users\\Maymay\\Downloads\\ppt bg.jpg";  // Replace with actual path
+        JLabel background = new JLabel(new ImageIcon(backgroundImagePath));
+        background.setLayout(new BorderLayout());
+
+        JPanel textPanel = new JPanel();
+        textPanel.setOpaque(false);
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+
+        // Title and subtitle
+        JLabel titleLabel = new JLabel("TodoList for Everyone");
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 32));
+        titleLabel.setForeground(Color.BLACK);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel subtitleLabel = new JLabel("Millions of tasks. No limits.");
+        subtitleLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        subtitleLabel.setForeground(Color.BLACK);
+        subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Button
+        JButton getStartedButton = new JButton("Click Here To Start!");
+        getStartedButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        getStartedButton.setBackground(Color.BLACK);  // Set button color to black
+        getStartedButton.setForeground(Color.WHITE);
+        getStartedButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Progress bar (initially hidden)
+        progressBar = new JProgressBar(0, 100);
+        progressBar.setVisible(false);
+        progressBar.setAlignmentX(Component.CENTER_ALIGNMENT);
+        progressBar.setForeground(new Color(30, 215, 96));
+
+        // Action listener for button click
+        getStartedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                progressValue = 0;  // Reset progress value to 0 when button is clicked
+                progressBar.setValue(progressValue);  // Update progress bar value
+                progressBar.setVisible(true);  // Show progress bar
+                timer.start();  // Start the progress
+            }
+        });
+
+        // Timer to simulate progress
+        timer = new Timer(100, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                progressValue += 5;  // Increment the progress value
+                if (progressValue > 100) {
+                    progressValue = 100; // Cap at 100 to avoid exceeding
+                }
+                progressBar.setValue(progressValue); // Update the progress bar
+
+                // Check if progress is complete
+                if (progressValue >= 100) {
+                    timer.stop(); // Stop the timer
+                    progressBar.setValue(100); // Ensure the bar visually completes
+                    // Close the current window and open the Todolist window
+                    new TaskManagerApp();  // Open the new window (Todolist class)
+                    dispose();  // Close the current window
+                }
+            }
+        });
+
+        // Add components to panel
+        textPanel.add(Box.createVerticalStrut(100));
+        textPanel.add(titleLabel);
+        textPanel.add(Box.createVerticalStrut(10));
+        textPanel.add(subtitleLabel);
+        textPanel.add(Box.createVerticalStrut(20));
+        textPanel.add(getStartedButton);
+        textPanel.add(Box.createVerticalStrut(20));
+        textPanel.add(progressBar);
+
+        background.add(textPanel, BorderLayout.CENTER);
+        add(background);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new click().setVisible(true);
+        });
+    }
+}
