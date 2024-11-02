@@ -18,7 +18,7 @@ public class click extends JFrame {
         setLocationRelativeTo(null);
         
         // Background image
-        String backgroundImagePath = "C:\\Users\\Maymay\\Downloads\\ppt bg.jpg";  // Replace with actual path
+        String backgroundImagePath = "C:\\Users\\Maymay\\Downloads\\ppt bg.jpg"; 
         JLabel background = new JLabel(new ImageIcon(backgroundImagePath));
         background.setLayout(new BorderLayout());
 
@@ -40,11 +40,11 @@ public class click extends JFrame {
         // Button
         JButton getStartedButton = new JButton("Click Here To Start!");
         getStartedButton.setFont(new Font("SansSerif", Font.BOLD, 16));
-        getStartedButton.setBackground(Color.BLACK);  // Set button color to black
+        getStartedButton.setBackground(Color.BLACK);  
         getStartedButton.setForeground(Color.WHITE);
         getStartedButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Progress bar (initially hidden)
+        // Progress bar 
         progressBar = new JProgressBar(0, 100);
         progressBar.setVisible(false);
         progressBar.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -54,10 +54,10 @@ public class click extends JFrame {
         getStartedButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                progressValue = 0;  // Reset progress value to 0 when button is clicked
-                progressBar.setValue(progressValue);  // Update progress bar value
-                progressBar.setVisible(true);  // Show progress bar
-                timer.start();  // Start the progress
+                progressValue = 0;  
+                progressBar.setValue(progressValue); 
+                progressBar.setVisible(true); 
+                timer.start();  
             }
         });
 
@@ -65,19 +65,18 @@ public class click extends JFrame {
         timer = new Timer(100, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                progressValue += 5;  // Increment the progress value
+                progressValue += 5;  
                 if (progressValue > 100) {
-                    progressValue = 100; // Cap at 100 to avoid exceeding
+                    progressValue = 100; 
                 }
-                progressBar.setValue(progressValue); // Update the progress bar
+                progressBar.setValue(progressValue); 
 
                 // Check if progress is complete
                 if (progressValue >= 100) {
                     timer.stop(); // Stop the timer
-                    progressBar.setValue(100); // Ensure the bar visually completes
-                    // Close the current window and open the Todolist window
-                    new TaskManagerApp();  // Open the new window (Todolist class)
-                    dispose();  // Close the current window
+                    progressBar.setValue(100); 
+                    new TaskManagerApp();  
+                    dispose(); 
                 }
             }
         });
